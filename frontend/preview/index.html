@@ -1,0 +1,1376 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legacy Vault â€” Sovereign Digital Inheritance</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  
+  <!-- GSAP, ScrollTrigger & Lenis Smooth Scroll -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Lenis Smooth Scrolling Styles */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+    .lenis.lenis-scrolling iframe {
+      pointer-events: none;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #06070a;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-serif-heading {
+      font-family: 'Instrument Serif', Georgia, serif;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Fullscreen background wave ribbon canvas */
+    #wave-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      will-change: transform, opacity;
+    }
+
+    /* Ambient atmospheric glow matching the Gold & Azure palette */
+    .ambient-glow {
+      position: absolute;
+      width: 1000px;
+      height: 600px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse at center, rgba(246, 210, 133, 0.08) 0%, rgba(77, 141, 248, 0.06) 35%, rgba(243, 198, 104, 0.02) 65%, transparent 80%);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+    }
+
+    /* Handhold Signature Pill Buttons with Magnetic Hover FX */
+    .btn-pill-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      color: #06070a;
+      padding: 11px 24px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      position: relative;
+      will-change: transform;
+    }
+    .btn-pill-primary:hover {
+      background: #f8fafc;
+      box-shadow: 0 12px 30px -4px rgba(255, 255, 255, 0.3);
+    }
+    .btn-pill-primary:active {
+      transform: scale(0.96) !important;
+    }
+
+    .btn-pill-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #f1f5f9;
+      padding: 11px 24px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(12px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+      cursor: pointer;
+      position: relative;
+      will-change: transform;
+    }
+    .btn-pill-secondary:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn-pill-secondary:active {
+      transform: scale(0.96) !important;
+    }
+
+    /* Handhold Pill Tag Badge */
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(10px);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #94a3b8;
+      letter-spacing: 0.02em;
+      will-change: transform;
+    }
+
+    /* Infinite Marquee */
+    @keyframes marqueeSlide {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: flex;
+      width: 200%;
+      animation: marqueeSlide 32s linear infinite;
+    }
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+
+    .mask-edges {
+      mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    }
+
+    /* Minimalist Glass Bento Cards with 3D Tilt */
+    .bento-card {
+      background: rgba(255, 255, 255, 0.018);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      backdrop-filter: blur(16px);
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .bento-card:hover {
+      background: rgba(255, 255, 255, 0.038);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 30px -5px rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+<body class="selection:bg-white/20 selection:text-white min-h-screen flex flex-col bg-[#06070a]">
+
+  <!-- ==================== HEADER (MINIMALIST PILL NAV) ==================== -->
+  <header id="site-header" class="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#06070a]/75 border-b border-white/[0.05]">
+    <div class="max-w-7xl mx-auto px-6 h-18 py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center space-x-2.5 text-white font-medium text-base tracking-tight select-none group">
+        <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#06070a] font-bold text-xs shadow-sm">
+          LV
+        </span>
+        <span class="tracking-tight font-semibold text-[15px] group-hover:text-slate-200 transition-colors">
+          Legacy Vault
+        </span>
+      </a>
+
+      <!-- Center Links (Desktop) -->
+      <nav class="hidden md:flex items-center space-x-1 bg-white/[0.03] border border-white/[0.06] rounded-full px-4 py-1.5 text-xs font-medium text-slate-300 backdrop-blur-md">
+        <a href="#usecases" class="px-3.5 py-1 rounded-full hover:text-white hover:bg-white/[0.06] transition-all">Use Cases</a>
+        <a href="#security" class="px-3.5 py-1 rounded-full hover:text-white hover:bg-white/[0.06] transition-all">Security</a>
+      </nav>
+
+      <!-- Right Hand Actions -->
+      <div class="flex items-center space-x-4">
+        <button onclick="openAppModal()" class="text-xs sm:text-sm text-slate-400 hover:text-white font-normal transition-colors px-2">
+          Sign in
+        </button>
+        <button onclick="openAppModal()" class="btn-pill-primary !py-2 !px-4 text-xs font-medium magnetic-btn">
+          <span>Launch Vault</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION (CLEAN WITH GOLDEN-AZURE UNDULATING WAVE) ==================== -->
+  <section class="relative min-h-[92vh] flex flex-col justify-between overflow-hidden border-b border-white/[0.05]">
+    
+    <!-- Ambient Radial Glow with Subtle Parallax -->
+    <div class="ambient-glow"></div>
+
+    <!-- The 3D Golden Sand & Sky Blue Stippled Ribbon Wave Canvas -->
+    <canvas id="wave-canvas"></canvas>
+
+    <!-- Center Hero Content with Cinematic Entry Reveal -->
+    <div class="relative z-10 max-w-5xl mx-auto px-6 pt-24 sm:pt-32 pb-16 flex flex-col items-center text-center my-auto">
+      
+      <!-- Top Pill Tag Badge -->
+      <div class="hero-badge pill-badge mb-8 float-badge">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span>Decentralized Inheritance Protocol 2.0</span>
+      </div>
+
+      <!-- Large Editorial Serif Heading (Cinematic Reveal) -->
+      <h1 class="hero-title font-serif-heading text-5xl sm:text-7xl md:text-8xl lg:text-[92px] font-normal text-white tracking-tight leading-[1.04] max-w-4xl mb-7 text-balance drop-shadow-sm">
+        A dedicated vault for every legacy.
+      </h1>
+
+      <!-- Clean Minimalist Subtitle -->
+      <p class="hero-subtitle text-base sm:text-lg md:text-xl text-slate-300/90 font-normal max-w-2xl mx-auto mb-11 leading-relaxed text-balance">
+        Autonomous smart contracts running tailored digital inheritance & decentralized estate succession 24/7.
+      </p>
+
+      <!-- Pill Buttons (Directly above the undulating wave peak) -->
+      <div class="hero-actions flex flex-wrap items-center justify-center gap-4">
+        <button onclick="openAppModal()" class="btn-pill-primary magnetic-btn">
+          <span>Launch Vault</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+        <a href="#usecases" class="btn-pill-secondary magnetic-btn inline-flex items-center">
+          <span>Explore Use Cases</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ==================== SECURITY PARTNERS TICKER ==================== -->
+    <div class="hero-ticker relative z-10 border-t border-white/[0.05] py-7 overflow-hidden mask-edges bg-[#06070a]/60 backdrop-blur-md">
+      <div class="animate-marquee items-center justify-around space-x-14 select-none">
+        
+        <!-- Ethereum -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 256 417" fill="currentColor"><path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" opacity=".6"/><path d="M127.962 0L0 212.32l127.962 75.639V154.158z"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z" opacity=".6"/><path d="M127.962 416.905v-104.72L0 236.585z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Ethereum</span>
+        </div>
+
+        <!-- Safe -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Safe MultiSig</span>
+        </div>
+
+        <!-- IPFS -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7.5v9L12 22l10-5.5v-9L12 2zm0 2.2l7.7 4.2-3.6 2-7.7-4.2 3.6-2zm-8 4.7l7 3.8v7.6l-7-3.8V8.9zm9 11.4v-7.6l7-3.8v7.6l-7 3.8z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">IPFS Protocol</span>
+        </div>
+
+        <!-- Chainlink -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-8.5 4.9v9.8L12 21.5l8.5-4.9V6.9L12 2zm0 3.2l5.7 3.3v6.6L12 18.4l-5.7-3.3V8.5L12 5.2z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Chainlink Oracles</span>
+        </div>
+
+        <!-- Polygon -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 7.5l-3.2-1.8c-.8-.5-1.8-.5-2.6 0L7.5 7.5c-.8.5-1.3 1.3-1.3 2.3v3.7c0 .9.5 1.8 1.3 2.3l3.2 1.8c.8.5 1.8.5 2.6 0l3.2-1.8c.8-.5 1.3-1.3 1.3-2.3V9.8c0-1-.5-1.8-1.3-2.3z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Polygon Network</span>
+        </div>
+
+        <!-- ZKsync -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v3H3V5zm0 6h18v3H3v-3zm0 6h18v3H3v-3z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">ZKsync Era</span>
+        </div>
+
+        <!-- Duplicate set for seamless continuous marquee -->
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 256 417" fill="currentColor"><path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" opacity=".6"/><path d="M127.962 0L0 212.32l127.962 75.639V154.158z"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z" opacity=".6"/><path d="M127.962 416.905v-104.72L0 236.585z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Ethereum</span>
+        </div>
+
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Safe MultiSig</span>
+        </div>
+
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7.5v9L12 22l10-5.5v-9L12 2zm0 2.2l7.7 4.2-3.6 2-7.7-4.2 3.6-2zm-8 4.7l7 3.8v7.6l-7-3.8V8.9zm9 11.4v-7.6l7-3.8v7.6l-7 3.8z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">IPFS Protocol</span>
+        </div>
+
+        <div class="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-8.5 4.9v9.8L12 21.5l8.5-4.9V6.9L12 2zm0 3.2l5.7 3.3v6.6L12 18.4l-5.7-3.3V8.5L12 5.2z"/></svg>
+          <span class="text-xs font-semibold tracking-wider uppercase">Chainlink Oracles</span>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+
+
+  <!-- ==================== USE CASES (BENTO GRID) ==================== -->
+  <section id="usecases" class="scroll-section py-24 border-b border-white/[0.05]">
+    <div class="max-w-6xl mx-auto px-6 space-y-14">
+      
+      <div class="reveal-header flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div class="space-y-2 max-w-xl">
+          <div class="pill-badge">USE CASES</div>
+          <h2 class="font-serif-heading text-4xl sm:text-5xl text-white font-normal">
+            Tailored preservation for every digital asset.
+          </h2>
+        </div>
+        <p class="text-sm text-slate-400 max-w-xs leading-relaxed">
+          From institutional cold storage seeds to family historical records and real property deeds.
+        </p>
+      </div>
+
+      <!-- 3 Bento Cards with Stagger Reveal and 3D Tilt -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Card 1 -->
+        <div class="stagger-card bento-card p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            </div>
+            <h3 class="text-xl font-medium text-white">Hardware Seeds & Recovery Keys</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Client-side AES-256 encrypted storage for Ledger, Trezor, multi-sig shards, and critical master passwords.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/[0.05] flex items-center justify-between text-xs text-slate-400">
+            <span>Multi-Sig Sharding</span>
+            <span class="text-white">Zero Knowledge</span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="stagger-card bento-card p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            <h3 class="text-xl font-medium text-white">Real Estate Deeds & Legal Wills</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Permanent decentralized IPFS document pinning with cryptographic proof of authenticity and timestamped notarization.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/[0.05] flex items-center justify-between text-xs text-slate-400">
+            <span>IPFS Pinned</span>
+            <span class="text-white">Legal Notarization</span>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="stagger-card bento-card p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 class="text-xl font-medium text-white">Family Wealth & Secret Directives</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Confidential posthumous memos, private family correspondence, and multi-generation inheritance governance rules.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-white/[0.05] flex items-center justify-between text-xs text-slate-400">
+            <span>Automated Timelock</span>
+            <span class="text-white">Direct Heir Release</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECURITY PILLARS ==================== -->
+  <section id="security" class="scroll-section py-24 border-b border-white/[0.05]">
+    <div class="max-w-6xl mx-auto px-6 space-y-14">
+      
+      <div class="reveal-header text-center space-y-3 max-w-xl mx-auto">
+        <div class="pill-badge">SECURITY ARCHITECTURE</div>
+        <h2 class="font-serif-heading text-4xl sm:text-5xl text-white font-normal">
+          Trustless cryptographic foundations.
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <div class="stagger-card bento-card p-6 space-y-3">
+          <div class="text-xs font-mono-code text-slate-400">01 / ENCRYPTION</div>
+          <h4 class="text-base font-medium text-white">Zero-Knowledge</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Data is encrypted locally in your browser before ever touching the blockchain. Nobody, not even validators, can view secrets.
+          </p>
+        </div>
+
+        <div class="stagger-card bento-card p-6 space-y-3">
+          <div class="text-xs font-mono-code text-slate-400">02 / SMART CONTRACTS</div>
+          <h4 class="text-base font-medium text-white">Non-Custodial</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Open-source EVM smart contracts hold no private backdoor. Only your verified heirs can trigger withdrawal upon timelock expiry.
+          </p>
+        </div>
+
+        <div class="stagger-card bento-card p-6 space-y-3">
+          <div class="text-xs font-mono-code text-slate-400">03 / REDUNDANCY</div>
+          <h4 class="text-base font-medium text-white">IPFS Distributed</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Decentralized storage pinned globally across redundant nodes. No single point of failure or server downtime.
+          </p>
+        </div>
+
+        <div class="stagger-card bento-card p-6 space-y-3">
+          <div class="text-xs font-mono-code text-slate-400">04 / DISPUTES</div>
+          <h4 class="text-base font-medium text-white">Owner Veto Lock</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            You retain sovereign veto capability at any moment during the grace window, preventing false or premature execution.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CALL TO ACTION BANNER ==================== -->
+  <section class="scroll-section py-28 relative overflow-hidden text-center border-b border-white/[0.05]">
+    <div class="ambient-glow !top-1/2"></div>
+    <div class="reveal-header relative z-10 max-w-3xl mx-auto px-6 space-y-6">
+      <div class="pill-badge">GET STARTED TODAY</div>
+      <h2 class="font-serif-heading text-5xl sm:text-6xl text-white font-normal text-balance">
+        Secure your digital succession in under five minutes.
+      </h2>
+      <p class="text-sm sm:text-base text-slate-400 max-w-lg mx-auto">
+        Connect your hardware wallet, designate your trusted nominees, and let sovereign smart contracts safeguard your legacy.
+      </p>
+      <div class="pt-4 flex justify-center">
+        <button onclick="openAppModal()" class="btn-pill-primary text-sm !px-7 !py-3 magnetic-btn">
+          <span>Connect Wallet & Launch Vault</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="py-12 bg-[#06070a]">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-500">
+      
+      <div class="flex items-center space-x-3">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="text-slate-400 font-medium">All Smart Contracts Operational</span>
+      </div>
+
+      <div class="flex items-center space-x-6 text-slate-400">
+        <a href="#usecases" class="hover:text-white transition-colors">Use Cases</a>
+        <a href="#security" class="hover:text-white transition-colors">Security</a>
+        <button onclick="openAppModal()" class="hover:text-white transition-colors">Launch Vault</button>
+      </div>
+
+      <span>&copy; 2026 Legacy Vault Protocol. Non-custodial & Open Source.</span>
+    </div>
+  </footer>
+
+  <!-- ==================== APPLICATION TERMINAL (LOGIN & DASHBOARD MODAL) ==================== -->
+  <div id="app-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 sm:p-6 overflow-y-auto hidden">
+    <div class="max-w-2xl mx-auto bg-[#08090f] border border-white/10 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 my-10 transition-all">
+      
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+        <div class="flex items-center space-x-3">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div>
+            <h3 class="font-medium text-base text-white">Legacy Vault Gateway</h3>
+            <p class="text-[11px] text-slate-400 font-mono-code">Decentralized Auth & Zero-Knowledge Enclave</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeAppModal()" class="text-slate-400 hover:text-white text-xs px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/[0.05] transition-colors">
+            âœ• Close
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 1: LOGIN CREDENTIALS ==================== -->
+      <div id="modal-view-auth" class="space-y-6">
+        
+        <!-- Header Text -->
+        <div class="space-y-1.5 text-center sm:text-left">
+          <div class="pill-badge !text-[10px] !py-0.5 !px-3 mb-2">ACCESS CREDENTIALS</div>
+          <h4 class="font-serif-heading text-2xl sm:text-3xl text-white font-normal">
+            Authenticate your credentials
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Select your role below to provide cryptographic proof and unlock your succession partition.
+          </p>
+        </div>
+
+        <!-- Role Selectors (Owner vs Nominee) -->
+        <div class="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/[0.08] text-xs">
+          <button id="auth-tab-owner" onclick="switchAuthRole('owner')" class="py-2.5 px-3 rounded-xl font-medium transition-all bg-white text-black shadow-sm flex items-center justify-center space-x-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Vault Owner</span>
+          </button>
+          <button id="auth-tab-nominee" onclick="switchAuthRole('nominee')" class="py-2.5 px-3 rounded-xl font-medium transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>Nominee / Heir</span>
+          </button>
+        </div>
+
+        <!-- Form 1: OWNER CREDENTIALS -->
+        <div id="auth-form-owner" class="space-y-4">
+          <div class="space-y-3 font-mono-code text-xs">
+            <div>
+              <div class="flex justify-between items-center text-slate-400 text-[11px] mb-1.5">
+                <span>OWNER WALLET / VAULT ID</span>
+                <button type="button" class="text-slate-400 hover:text-white transition-colors" onclick="fillOwnerDemo()">âš¡ Autofill Demo</button>
+              </div>
+              <div class="relative">
+                <input type="text" id="owner-wallet-input" value="0x71CB49a8B3E12D8A9F3214C05672B289" class="w-full bg-black/60 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-white/40">
+                <span class="absolute right-3 top-2.5 text-[10px] text-slate-300 font-sans px-1.5 py-0.5 rounded bg-white/[0.08]">Verified Enclave</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1.5">
+                MASTER PASSPHRASE / HARDWARE KEY SIGNATURE
+              </label>
+              <input type="password" id="owner-secret-input" value="master-vault-hardware-sharded-key" class="w-full bg-black/60 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-white/40">
+              <p class="text-[10.5px] text-slate-500 font-sans mt-1">
+                Zero-knowledge WebCrypto AES-GCM 256. Private keys never touch any server.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1.5">HARDWARE / SIGNER ENCLAVE</label>
+              <div class="grid grid-cols-3 gap-2 text-[10.5px]">
+                <button type="button" class="py-2 px-2 rounded-lg bg-white/[0.08] border border-white/20 text-white text-center font-medium">MetaMask</button>
+                <button type="button" class="py-2 px-2 rounded-lg bg-white/[0.02] border border-white/[0.08] text-slate-400 text-center hover:text-white">Ledger HW</button>
+                <button type="button" class="py-2 px-2 rounded-lg bg-white/[0.02] border border-white/[0.08] text-slate-400 text-center hover:text-white">Safe MultiSig</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button onclick="loginAs('owner')" id="btn-submit-owner" class="btn-pill-primary w-full justify-center !py-3 text-xs font-medium magnetic-btn">
+              <span>Authenticate & Enter Owner Vault</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Form 2: NOMINEE CREDENTIALS -->
+        <div id="auth-form-nominee" class="space-y-4 hidden">
+          <div class="space-y-3 font-mono-code text-xs">
+            <div>
+              <div class="flex justify-between items-center text-slate-400 text-[11px] mb-1.5">
+                <span>NOMINEE RECIPIENT WALLET</span>
+                <button type="button" class="text-slate-400 hover:text-white transition-colors" onclick="fillNomineeDemo()">âš¡ Autofill Demo</button>
+              </div>
+              <div class="relative">
+                <input type="text" id="nominee-wallet-input" value="0x8924f71aC32B910d65824e819b5cA129" class="w-full bg-black/60 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-white/40">
+                <span class="absolute right-3 top-2.5 text-[10px] text-slate-300 font-sans px-1.5 py-0.5 rounded bg-white/[0.08]">Beneficiary Proof</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1.5">
+                SUCCESSION CLAIM CODE / TIMELOCK SECRET
+              </label>
+              <input type="password" id="nominee-secret-input" value="CLAIM-2026-LEGACY-0982-ZK" class="w-full bg-black/60 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-white/40">
+              <p class="text-[10.5px] text-slate-500 font-sans mt-1">
+                Cryptographic authorization hash issued by the timelock governor smart contract.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1.5">ATTESTATION CONSENSUS</label>
+              <div class="grid grid-cols-2 gap-2 text-[10.5px]">
+                <button type="button" class="py-2 px-2 rounded-lg bg-white/[0.08] border border-white/20 text-white text-center font-medium">Chainlink Vitality Oracle</button>
+                <button type="button" class="py-2 px-2 rounded-lg bg-white/[0.02] border border-white/[0.08] text-slate-400 text-center hover:text-white">Timelock Witness Proof</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button onclick="loginAs('nominee')" id="btn-submit-nominee" class="btn-pill-primary w-full justify-center !py-3 text-xs font-medium magnetic-btn">
+              <span>Authenticate & Enter Nominee Portal</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== VIEW 2: AUTHENTICATED DASHBOARD ==================== -->
+      <div id="modal-view-authenticated" class="space-y-6 hidden">
+        
+        <!-- Active Session Status Bar -->
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span id="auth-role-badge" class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+            <div>
+              <span id="auth-session-text" class="text-xs font-medium text-white block">Logged in as Vault Owner</span>
+              <span id="auth-session-address" class="text-[11px] font-mono-code text-slate-400">0x71CB...B289</span>
+            </div>
+          </div>
+          <button onclick="logoutAuth()" class="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-full border border-white/[0.08] hover:bg-white/[0.05] transition-colors flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <span>Sign Out / Switch</span>
+          </button>
+        </div>
+
+        <!-- Navigation Tabs inside Dashboard -->
+        <div class="flex space-x-2 p-1.5 bg-black/40 rounded-full border border-white/[0.06] text-xs">
+          <button id="modal-tab-dash" onclick="switchModalTab('dash')" class="flex-1 py-2 rounded-full font-medium bg-white text-black transition-all">
+            Owner Dashboard
+          </button>
+          <button id="modal-tab-nom" onclick="switchModalTab('nom')" class="flex-1 py-2 rounded-full font-medium text-slate-400 hover:text-white transition-all">
+            Nominee Portal
+          </button>
+        </div>
+
+        <!-- Tab 1: Owner Dashboard -->
+        <div id="modal-view-dash" class="space-y-4 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 font-medium">Encrypted Vault Assets (2)</span>
+            <button onclick="promptDeposit()" class="btn-pill-primary text-xs !py-1.5 !px-3.5">
+              + Deposit Asset
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex justify-between items-center hover:bg-white/[0.04] transition-colors">
+              <div class="space-y-1">
+                <div class="font-medium text-white text-sm">Master Crypto Seed Phrase & MultiSig Keys</div>
+                <div class="text-slate-400 font-mono-code text-[11px]">Designated Nominee: 0x8924...A129 (Confirmed)</div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-[10px] bg-white/[0.06] text-slate-300 border border-white/[0.1] font-mono-code">Active & Pinned</span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex justify-between items-center hover:bg-white/[0.04] transition-colors">
+              <div class="space-y-1">
+                <div class="font-medium text-white text-sm">Commercial Property Deed & Digital Will</div>
+                <div class="text-slate-400 font-mono-code text-[11px]">Designated Nominee: 0x71CB...B289</div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-[10px] bg-white/[0.06] text-slate-300 border border-white/[0.1] font-mono-code">IPFS Notarized</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Nominee Portal -->
+        <div id="modal-view-nom" class="space-y-4 text-xs hidden">
+          <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-medium text-white text-sm">Commercial Property Deed & Digital Will</span>
+              <span class="px-3 py-1 rounded-full text-[10px] bg-white/[0.06] text-slate-300 border border-white/[0.1] font-mono-code">Accepted</span>
+            </div>
+            <p class="text-slate-400 leading-relaxed text-xs">
+              Inheritance granted by Vault Owner: <span class="font-mono-code text-slate-300">0x71CB...B289</span>.
+            </p>
+            <div class="text-[11px] text-slate-400 font-mono-code pt-2 border-t border-white/[0.05]">
+              Smart Contract Status: Timelock Armed Â· 14 Days Remaining Until Decryption
+            </div>
+            <div class="pt-2">
+              <button onclick="alert('Claim verification initiated. Zero-knowledge proof verified on EVM. Ready for heir download.')" class="btn-pill-primary text-xs !py-2 !px-4">
+                <span>Claim & Unseal IPFS File</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 3D GOLDEN-AZURE WAVE CANVAS & GSAP ANIMATIONS ==================== -->
+  <script>
+    // =========================================================================
+    // 1. LENIS SMOOTH SCROLLING ENGINE
+    // =========================================================================
+    let lenis;
+    try {
+      lenis = new Lenis({
+        duration: 1.25,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.95,
+        touchMultiplier: 1.5,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      if (typeof ScrollTrigger !== 'undefined') {
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      }
+    } catch (err) {
+      console.warn('Lenis smooth scrolling fallback:', err);
+    }
+
+    // =========================================================================
+    // 2. 3D GOLDEN SAND & AZURE STIPPLED RIBBON WAVE (HANDHOLD.IO SIGNATURE)
+    // =========================================================================
+    const canvas = document.getElementById('wave-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let time = 0;
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetMouseX = 0;
+    let targetMouseY = 0;
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = canvas.parentElement.offsetWidth;
+      height = canvas.parentElement.offsetHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    window.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      targetMouseX = (e.clientX - rect.left - width / 2) * 0.08;
+      targetMouseY = (e.clientY - rect.top - height / 2) * 0.08;
+    });
+
+    // Generate Stippled Sand Grain Particles that flow along the ribbon
+    const numGrains = 280;
+    const grains = [];
+    for (let i = 0; i < numGrains; i++) {
+      grains.push({
+        u: Math.random(),            // Position along X (0 to 1)
+        v: (Math.random() - 0.5) * 0.85, // Position across ribbon width (-0.5 to 0.5)
+        speed: Math.random() * 0.0006 + 0.0003,
+        size: Math.random() * 1.5 + 0.6,
+        seed: Math.random() * 100
+      });
+    }
+
+    // Color interpolation function matching the exact user image:
+    // Warm champagne golden sand body with electric sky-blue / periwinkle folds
+    function getWaveColor(u, v, twist, alpha = 0.5) {
+      // twist determines if this part of the ribbon is facing forward or folded backward
+      const isFold = Math.sin(twist) < -0.15;
+      const foldIntensity = Math.max(0, -Math.sin(twist));
+
+      // In the image, blue appears prominently in the twisted interior folds
+      // (especially around u = 0.28 to 0.42 and u = 0.62 to 0.76)
+      const blueZone1 = Math.exp(-Math.pow((u - 0.32) / 0.09, 2));
+      const blueZone2 = Math.exp(-Math.pow((u - 0.68) / 0.11, 2));
+      const blueWeight = Math.min(1, Math.max(0, (blueZone1 * 0.95 + blueZone2 * 0.9) * (0.6 + foldIntensity * 0.5)));
+
+      // Sand Gold colors:
+      // Crest: ivory/champagne gold (246, 210, 133)
+      // Base: warm amber sand (235, 178, 85)
+      const goldR = 244 + v * 10;
+      const goldG = 205 + v * 25;
+      const goldB = 118 + v * 35;
+
+      // Sky Blue colors:
+      // Cornflower / azure blue (77, 145, 248) to cyan periwinkle (96, 175, 255)
+      const blueR = 75;
+      const blueG = 145;
+      const blueB = 248;
+
+      // Blend between Gold Sand and Sky Blue
+      const r = Math.round(goldR * (1 - blueWeight) + blueR * blueWeight);
+      const g = Math.round(goldG * (1 - blueWeight) + blueG * blueWeight);
+      const b = Math.round(goldB * (1 - blueWeight) + blueB * blueWeight);
+
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function renderWave() {
+      time += 0.014;
+      ctx.clearRect(0, 0, width, height);
+
+      // Smooth mouse follow
+      mouseX += (targetMouseX - mouseX) * 0.04;
+      mouseY += (targetMouseY - mouseY) * 0.04;
+
+      // In the screenshot, the ribbon flows horizontally across the lower middle of the hero
+      const centerY = height * 0.52 + mouseY;
+
+      // Compute main wave geometry function
+      function getWaveY(u, t) {
+        // High peak in the center-right (near u ~ 0.58-0.65), graceful dip, lower crest on left
+        const harmonic1 = Math.sin(u * Math.PI * 2.6 - 0.55 + t * 0.5) * (height * 0.16);
+        const harmonic2 = Math.sin(u * Math.PI * 1.4 + 0.3 + t * 0.3) * (height * 0.08);
+        const harmonic3 = Math.cos(u * Math.PI * 4.2 - t * 0.4) * (height * 0.04);
+        // Peak envelope
+        const peakEnvelope = Math.sin(Math.pow(u, 0.85) * Math.PI) * 1.1;
+        return (harmonic1 + harmonic2 + harmonic3) * peakEnvelope;
+      }
+
+      function getRibbonWidth(u) {
+        // Width profile: wide and graceful across the center, gentle tapering at edges
+        return Math.sin(Math.pow(u, 0.8) * Math.PI) * Math.min(width * 0.18, 195);
+      }
+
+      function getTwistAngle(u, t) {
+        // 3D twist along the length, causing the ribbon to flip and reveal its blue interior
+        return u * Math.PI * 3.4 - 0.4 + t * 0.45 + Math.sin(u * Math.PI * 2.2 + t * 0.3) * 0.5;
+      }
+
+      // -------------------------------------------------------------
+      // 1. Draw Dense Longitudinal Flow Strands (Silk Ribbon Mesh)
+      // -------------------------------------------------------------
+      const numStrands = 78;
+      const stepX = 8;
+      const totalSteps = Math.ceil(width / stepX);
+
+      ctx.save();
+      // Use screen blend mode so overlapping layers create a brilliant shimmering glow
+      ctx.globalCompositeOperation = 'screen';
+
+      for (let s = 0; s < numStrands; s++) {
+        const v = (s / (numStrands - 1)) - 0.5; // -0.5 to 0.5 across the ribbon width
+
+        ctx.beginPath();
+        let started = false;
+
+        for (let i = 0; i <= totalSteps; i++) {
+          const x = i * stepX;
+          const u = x / width;
+
+          const baseWave = getWaveY(u, time);
+          const ribWidth = getRibbonWidth(u);
+          const twist = getTwistAngle(u, time);
+
+          // 3D rotation of cross-section
+          const offsetY = v * ribWidth * Math.cos(twist);
+          const offsetZ = v * ribWidth * Math.sin(twist);
+
+          const px = x + offsetZ * 0.25;
+          const py = centerY + baseWave + offsetY;
+
+          if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+
+        // Mid-point twist for color mapping
+        const midU = 0.5;
+        const midTwist = getTwistAngle(midU, time);
+        const strandAlpha = 0.15 + (1 - Math.abs(v * 2)) * 0.32;
+
+        ctx.strokeStyle = getWaveColor(midU + v * 0.2, v, midTwist, strandAlpha);
+        ctx.lineWidth = s % 3 === 0 ? 1.4 : 0.85;
+        ctx.stroke();
+      }
+
+      // -------------------------------------------------------------
+      // 2. Draw Translucent Shimmering Ribbon Polygon Fills
+      // -------------------------------------------------------------
+      const ribbonSteps = 3;
+      for (let s = 0; s < numStrands - ribbonSteps; s += ribbonSteps * 2) {
+        const v1 = (s / (numStrands - 1)) - 0.5;
+        const v2 = ((s + ribbonSteps) / (numStrands - 1)) - 0.5;
+
+        for (let i = 4; i < totalSteps - 4; i += 4) {
+          const x1 = i * stepX;
+          const x2 = Math.min((i + 4) * stepX, width);
+          const u1 = x1 / width;
+          const u2 = x2 / width;
+
+          const ribW1 = getRibbonWidth(u1);
+          const ribW2 = getRibbonWidth(u2);
+          const twist1 = getTwistAngle(u1, time);
+          const twist2 = getTwistAngle(u2, time);
+
+          const p1A = { x: x1, y: centerY + getWaveY(u1, time) + v1 * ribW1 * Math.cos(twist1) };
+          const p1B = { x: x2, y: centerY + getWaveY(u2, time) + v1 * ribW2 * Math.cos(twist2) };
+          const p2B = { x: x2, y: centerY + getWaveY(u2, time) + v2 * ribW2 * Math.cos(twist2) };
+          const p2A = { x: x1, y: centerY + getWaveY(u1, time) + v2 * ribW1 * Math.cos(twist1) };
+
+          const grad = ctx.createLinearGradient(p1A.x, p1A.y, p2B.x, p2B.y);
+          grad.addColorStop(0, getWaveColor(u1, v1, twist1, 0.08));
+          grad.addColorStop(1, getWaveColor(u2, v2, twist2, 0.02));
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(p1A.x, p1A.y);
+          ctx.lineTo(p1B.x, p1B.y);
+          ctx.lineTo(p2B.x, p2B.y);
+          ctx.lineTo(p2A.x, p2A.y);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      // -------------------------------------------------------------
+      // 3. Draw Fine Stippled Sand / Granular Grain Texture (As in Image)
+      // -------------------------------------------------------------
+      for (let i = 0; i < grains.length; i++) {
+        const g = grains[i];
+        g.u += g.speed;
+        if (g.u > 1) g.u -= 1;
+
+        const ribW = getRibbonWidth(g.u);
+        const twist = getTwistAngle(g.u, time);
+
+        // Stipple grain position
+        const grainY = centerY + getWaveY(g.u, time) + g.v * ribW * Math.cos(twist);
+        const grainX = g.u * width + g.v * ribW * Math.sin(twist) * 0.25;
+
+        // Draw individual stippled particle
+        ctx.beginPath();
+        ctx.arc(grainX, grainY, g.size, 0, Math.PI * 2);
+
+        // Grain color matches local sand or blue fold
+        const grainAlpha = (0.35 + Math.sin(time * 2 + g.seed) * 0.25) * Math.sin(g.u * Math.PI);
+        ctx.fillStyle = getWaveColor(g.u, g.v, twist, Math.max(0.08, grainAlpha));
+        ctx.fill();
+      }
+
+      // -------------------------------------------------------------
+      // 4. Subtle Outer Atmosphere Soft Wash
+      // -------------------------------------------------------------
+      // Peak aura glow
+      const peakU = 0.62;
+      const peakX = peakU * width;
+      const peakY = centerY + getWaveY(peakU, time);
+      const peakAura = ctx.createRadialGradient(peakX, peakY, 20, peakX, peakY, 320);
+      peakAura.addColorStop(0, 'rgba(246, 210, 133, 0.12)');
+      peakAura.addColorStop(0.5, 'rgba(77, 141, 248, 0.05)');
+      peakAura.addColorStop(1, 'transparent');
+      ctx.fillStyle = peakAura;
+      ctx.beginPath();
+      ctx.arc(peakX, peakY, 320, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      requestAnimationFrame(renderWave);
+    }
+    requestAnimationFrame(renderWave);
+
+    // =========================================================================
+    // 3. GSAP + SCROLLTRIGGER CINEMATIC ANIMATIONS (PEACHWEB INSPIRATION)
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof gsap === 'undefined') return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      // --- A. Cinematic Hero Page Load Timeline ---
+      const heroTl = gsap.timeline({
+        defaults: { ease: 'power4.out' }
+      });
+
+      // Header slide down
+      heroTl.fromTo('#site-header', 
+        { y: -35, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' }
+      );
+
+      // Golden-azure wave canvas smooth emergence
+      heroTl.fromTo('#wave-canvas',
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 1.8, ease: 'power2.out' },
+        "-=0.9"
+      );
+
+      // Hero pill badge
+      heroTl.fromTo('.hero-badge',
+        { y: 25, opacity: 0, scale: 0.94 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out' },
+        "-=1.4"
+      );
+
+      // Hero main title with elegant cinematic lift
+      heroTl.fromTo('.hero-title',
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.3, ease: 'power4.out' },
+        "-=1.1"
+      );
+
+      // Hero subtitle
+      heroTl.fromTo('.hero-subtitle',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' },
+        "-=0.9"
+      );
+
+      // Hero buttons
+      heroTl.fromTo('.hero-actions',
+        { y: 24, opacity: 0, scale: 0.97 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out' },
+        "-=0.8"
+      );
+
+      // Hero ticker
+      heroTl.fromTo('.hero-ticker',
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+        "-=0.6"
+      );
+
+      // --- B. Floating Elements Animation (Breathing/bobbing physics) ---
+      gsap.to('.float-badge', {
+        y: -5,
+        duration: 2.8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+
+      // --- C. Subtle Scroll Parallax on Golden-Azure Wave Canvas & Ambient Glow ---
+      gsap.to('#wave-canvas', {
+        yPercent: 16,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: 'section:first-of-type',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.2
+        }
+      });
+
+      gsap.to('.ambient-glow', {
+        y: 110,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: 'body',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.5
+        }
+      });
+
+      // --- D. Scroll-Triggered Reveals for Section Headers ---
+      gsap.utils.toArray('.reveal-header').forEach(header => {
+        gsap.fromTo(header,
+          { y: 45, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: header,
+              start: 'top 85%',
+              toggleActions: 'play none none none'
+            }
+          }
+        );
+      });
+
+
+
+      // --- F. Staggered Bento Cards Reveal (Use Cases & Security) ---
+      document.querySelectorAll('.scroll-section').forEach(section => {
+        const cards = section.querySelectorAll('.stagger-card');
+        if (cards.length > 0) {
+          gsap.fromTo(cards,
+            { y: 50, opacity: 0, scale: 0.96 },
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 1.0,
+              stagger: 0.14,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 75%',
+                toggleActions: 'play none none none'
+              }
+            }
+          );
+        }
+      });
+
+      // --- G. Magnetic Hover Physics on Buttons ---
+      document.querySelectorAll('.magnetic-btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const relX = e.clientX - rect.left - rect.width / 2;
+          const relY = e.clientY - rect.top - rect.height / 2;
+          gsap.to(btn, {
+            x: relX * 0.25,
+            y: relY * 0.25,
+            duration: 0.35,
+            ease: 'power2.out'
+          });
+        });
+
+        btn.addEventListener('mouseleave', () => {
+          gsap.to(btn, {
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: 'elastic.out(1.1, 0.4)'
+          });
+        });
+      });
+
+      // --- H. 3D Tilt Hover Physics on Bento Cards ---
+      document.querySelectorAll('.bento-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          gsap.to(card, {
+            rotateY: x * 0.025,
+            rotateX: -y * 0.025,
+            transformPerspective: 900,
+            duration: 0.4,
+            ease: 'power1.out'
+          });
+        });
+
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            rotateX: 0,
+            rotateY: 0,
+            duration: 0.8,
+            ease: 'power2.out'
+          });
+        });
+      });
+
+    });
+
+
+
+    // =========================================================================
+    // 5. APPLICATION GATEWAY & AUTHENTICATION HELPERS
+    // =========================================================================
+    let currentAuthSession = null; // 'owner' | 'nominee' | null
+
+    function openAppModal(preferredRole = 'owner') {
+      const modal = document.getElementById('app-modal');
+      modal.classList.remove('hidden');
+
+      if (!currentAuthSession) {
+        // Show authentication / login credentials view
+        document.getElementById('modal-view-auth').classList.remove('hidden');
+        document.getElementById('modal-view-authenticated').classList.add('hidden');
+        switchAuthRole(preferredRole, false);
+      } else {
+        // Already logged in - show dashboard
+        document.getElementById('modal-view-auth').classList.add('hidden');
+        document.getElementById('modal-view-authenticated').classList.remove('hidden');
+      }
+
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(modal.firstElementChild, 
+          { scale: 0.94, opacity: 0, y: 20 }, 
+          { scale: 1, opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }
+        );
+      }
+    }
+
+    function closeAppModal() {
+      const modal = document.getElementById('app-modal');
+      if (typeof gsap !== 'undefined') {
+        gsap.to(modal.firstElementChild, {
+          scale: 0.95,
+          opacity: 0,
+          y: 15,
+          duration: 0.25,
+          ease: 'power2.in',
+          onComplete: () => modal.classList.add('hidden')
+        });
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function switchAuthRole(role, animate = true) {
+      const isOwner = role === 'owner';
+      const ownerTab = document.getElementById('auth-tab-owner');
+      const nomineeTab = document.getElementById('auth-tab-nominee');
+      const ownerForm = document.getElementById('auth-form-owner');
+      const nomineeForm = document.getElementById('auth-form-nominee');
+
+      if (isOwner) {
+        ownerTab.classList.add('bg-white', 'text-black', 'shadow-sm');
+        ownerTab.classList.remove('text-slate-400');
+        nomineeTab.classList.remove('bg-white', 'text-black', 'shadow-sm');
+        nomineeTab.classList.add('text-slate-400');
+
+        ownerForm.classList.remove('hidden');
+        nomineeForm.classList.add('hidden');
+
+        if (animate && typeof gsap !== 'undefined') {
+          gsap.fromTo(ownerForm, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+        }
+      } else {
+        nomineeTab.classList.add('bg-white', 'text-black', 'shadow-sm');
+        nomineeTab.classList.remove('text-slate-400');
+        ownerTab.classList.remove('bg-white', 'text-black', 'shadow-sm');
+        ownerTab.classList.add('text-slate-400');
+
+        nomineeForm.classList.remove('hidden');
+        ownerForm.classList.add('hidden');
+
+        if (animate && typeof gsap !== 'undefined') {
+          gsap.fromTo(nomineeForm, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+        }
+      }
+    }
+
+    function fillOwnerDemo() {
+      document.getElementById('owner-wallet-input').value = '0x71CB49a8B3E12D8A9F3214C05672B289';
+      document.getElementById('owner-secret-input').value = 'master-vault-hardware-sharded-key';
+    }
+
+    function fillNomineeDemo() {
+      document.getElementById('nominee-wallet-input').value = '0x8924f71aC32B910d65824e819b5cA129';
+      document.getElementById('nominee-secret-input').value = 'CLAIM-2026-LEGACY-0982-ZK';
+    }
+
+    function loginAs(role) {
+      const isOwner = role === 'owner';
+      const btn = document.getElementById(isOwner ? 'btn-submit-owner' : 'btn-submit-nominee');
+      const originalText = btn.innerHTML;
+
+      // Loading spinner simulation
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-flex items-center space-x-2"><span>Connecting...</span><span class="w-3 h-3 rounded-full border-2 border-black/30 border-t-black animate-spin"></span></span>`;
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        currentAuthSession = role;
+
+        // Configure session details
+        const sessionBadge = document.getElementById('auth-role-badge');
+        const sessionText = document.getElementById('auth-session-text');
+        const sessionAddress = document.getElementById('auth-session-address');
+
+        if (isOwner) {
+          sessionBadge.className = 'w-2 h-2 rounded-full bg-white';
+          sessionText.innerText = 'Connected as Vault Owner';
+          sessionAddress.innerText = document.getElementById('owner-wallet-input').value.slice(0, 10) + '...' + document.getElementById('owner-wallet-input').value.slice(-4);
+        } else {
+          sessionBadge.className = 'w-2 h-2 rounded-full bg-slate-300';
+          sessionText.innerText = 'Connected as Beneficiary / Heir';
+          sessionAddress.innerText = document.getElementById('nominee-wallet-input').value.slice(0, 10) + '...' + document.getElementById('nominee-wallet-input').value.slice(-4);
+        }
+
+        // Transition from Auth to Authenticated Dashboard
+        const authView = document.getElementById('modal-view-auth');
+        const dashView = document.getElementById('modal-view-authenticated');
+
+        if (typeof gsap !== 'undefined') {
+          gsap.to(authView, {
+            opacity: 0,
+            y: -10,
+            duration: 0.25,
+            ease: 'power2.in',
+            onComplete: () => {
+              authView.classList.add('hidden');
+              dashView.classList.remove('hidden');
+              switchModalTab(isOwner ? 'dash' : 'nom');
+              gsap.fromTo(dashView, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' });
+            }
+          });
+        } else {
+          authView.classList.add('hidden');
+          dashView.classList.remove('hidden');
+          switchModalTab(isOwner ? 'dash' : 'nom');
+        }
+      }, 550);
+    }
+
+    function logoutAuth() {
+      currentAuthSession = null;
+      const authView = document.getElementById('modal-view-auth');
+      const dashView = document.getElementById('modal-view-authenticated');
+
+      if (typeof gsap !== 'undefined') {
+        gsap.to(dashView, {
+          opacity: 0,
+          y: -10,
+          duration: 0.25,
+          ease: 'power2.in',
+          onComplete: () => {
+            dashView.classList.add('hidden');
+            authView.classList.remove('hidden');
+            switchAuthRole('owner', false);
+            gsap.fromTo(authView, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' });
+          }
+        });
+      } else {
+        dashView.classList.add('hidden');
+        authView.classList.remove('hidden');
+        switchAuthRole('owner', false);
+      }
+    }
+
+    function switchModalTab(tab) {
+      ['dash', 'nom'].forEach(t => {
+        document.getElementById('modal-view-' + t).classList.add('hidden');
+        const btn = document.getElementById('modal-tab-' + t);
+        btn.classList.remove('bg-white', 'text-black');
+        btn.classList.add('text-slate-400');
+      });
+      const activeView = document.getElementById('modal-view-' + tab);
+      activeView.classList.remove('hidden');
+      const activeBtn = document.getElementById('modal-tab-' + tab);
+      activeBtn.classList.add('bg-white', 'text-black');
+      activeBtn.classList.remove('text-slate-400');
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(activeView, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35 });
+      }
+    }
+
+    function promptDeposit() {
+      const title = prompt('Enter asset title to encrypt & pin to IPFS:');
+      if (title) {
+        alert('Asset "' + title + '" client-encrypted and registered on the inheritance smart contract.');
+      }
+    }
+  </script>
+</body>
+</html>
