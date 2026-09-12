@@ -8,7 +8,7 @@ dist/
 bundle/
 artifacts/
 cache/
-types/
+/types/
 coverage/
 
 # Python
